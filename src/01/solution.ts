@@ -42,7 +42,7 @@ function rightToLeft(input: any) {
   }
 }
 
-const file = Bun.file("./src/input.txt");
+const file = Bun.file("./src/01/input.txt");
 const text = await file.text();
 const lines = text.split("\n");
 lines.pop();
