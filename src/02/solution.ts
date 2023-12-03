@@ -11,50 +11,46 @@ lines.pop();
 //   "Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green",
 // ];
 
-const bag = {
+type Bag = {
+  red: number;
+  green: number;
+  blue: number;
+};
+const bag: Bag = {
   red: 12,
   green: 13,
   blue: 14,
 };
 
-const possibleGamesIds = [];
 let sum = 0;
 
-const gameWasPossible = (thisBag: typeof bag) => {
+const gameWasPossible = (thisBag: Bag) => {
   return !Object.values(thisBag).filter((v) => v < 0).length;
 };
 
-let prevGame = 0;
+const cubeSetPower = (thisBag: Bag) => {
+  return Object.values(thisBag)
+    .filter((v) => v > 0)
+    .reduce((a, b) => a * b, 1);
+};
 
 for (const line of lines) {
-  let thisGameWasPossible = true;
-  const [game, subsets] = line.split(":");
+  const [, subsets] = line.split(":");
 
-  let gameId = parseInt(game.split(" ")[1]);
-
-  if (prevGame + 1 !== gameId) {
-    console.log("Missing game", prevGame);
-    break;
-  }
+  const thisBag: Bag = { red: 0, green: 0, blue: 0 };
 
   for (const subset of subsets.split(";")) {
-    const thisBag: typeof bag = { ...bag };
     for (const cubes of subset.trim().split(",")) {
       const [count, color]: string[] = cubes.trim().split(" ");
-      thisBag[color as keyof typeof bag] =
-        thisBag[color as keyof typeof bag] - parseInt(count);
-    }
-    if (!gameWasPossible(thisBag)) {
-      thisGameWasPossible = false;
-      break;
+
+      thisBag[color as keyof Bag] = Math.max(
+        thisBag[color as keyof Bag],
+        parseInt(count)
+      );
     }
   }
 
-  if (thisGameWasPossible) {
-    possibleGamesIds.push(gameId);
-    sum += gameId;
-  }
-  prevGame = gameId;
+  sum += cubeSetPower(thisBag);
 }
 
 console.log(sum);
